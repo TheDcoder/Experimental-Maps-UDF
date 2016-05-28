@@ -13,7 +13,8 @@
 ; AutoIt Version : 3.3.15.0 (Beta)
 ; Description ...: Experimental Maps UDF.
 ; Author(s) .....: Damon Harris (TheDcoder)
-; Link ..........: https://www.autoitscript.com/forum/topic/178897-experimental-maps-udf/
+; Links .........: Forum  - https://www.autoitscript.com/forum/topic/178897-experimental-maps-udf/
+;                  GitHub - https://github.com/TheDcoder/Experimental-Maps-UDF
 ; ===============================================================================================================================
 
 ; #CURRENT# =====================================================================================================================
