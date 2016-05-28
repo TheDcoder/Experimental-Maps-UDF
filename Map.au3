@@ -221,8 +221,9 @@ EndFunc   ;==>_Map_ConvertToArray
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Map_Delete
 ; Description ...: Deletes all the elements in a map.
-; Syntax ........: _Map_Delete(Byref $mMap)
+; Syntax ........: _Map_Delete(Byref $mMap, $bHardWay = False)
 ; Parameters ....: $mMap                - [in/out] Map to process.
+;                  $bHardWay            - [optional] If True, The elements are removed one by one. Not recommended.
 ; Return values .: Success: True & If $bHardWay Then @extended contains No. of elements in the map.
 ;                  Failure: False, @extended contains the Error Count & @error is set to non-zero.
 ; Author ........: Damon Harris (TheDcoder)
