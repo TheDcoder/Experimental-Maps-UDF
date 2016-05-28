@@ -451,24 +451,28 @@ EndFunc   ;==>_Map_ReassignKey
 ; Parameters ....: $mMap                - [in/out] $mMap to search.
 ;                  $vSearch             - What to search for.
 ;                  $bCaseSense          - [optional] Case Sensitive?. Default is False.
-; Return values .: Success: An array holding keys in which the content matched (with item count in [0])
+; Return values .: Success: An 2D array holding keys in which the content matched (with item count in [0])
 ;                  Failure: An array with [0] = 0
 ; Author ........: Your Name
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: The format of returned Array: (n denotes a Natural Number)
+;                  The nth match is located in $aArray[n]. In the [0] columun is the name of the key and in the [1] is the Position of the text matched.
+;
+;                  See example for more details.
 ; Related .......:
 ; Link ..........:
-; Example .......: No
+; Example .......: Yes
 ; ===============================================================================================================================
 Func _Map_Search(ByRef $mMap, $vSearch, $bCaseSense = False)
 	Local $aKeys = MapKeys($mMap) ; Get the $aKeys
 	Local $vFound[] ; Matching items will be stored in this map
 	Local $iStringPos = 0 ; Position of string
+	Local $iCaseSense = $bCaseSense ? $STR_CASESENSE : $STR_NOCASESENSEBASIC ; Convert $bCaseSense to $iCaseSense to make it usable with StringInStr
 	For $vKey In $aKeys ; Loop...
-		$iStringPos = StringInStr($mMap[$vKey], $vSearch, Int($bCaseSense)) ; Search for $vSearch
-		If Not $iStringPos = 0 Then MapAppend($vFound, $vKey) ; If its is found then append it
+		$iStringPos = StringInStr($mMap[$vKey], $vSearch, $iCaseSense) ; Search for $vSearch
+		If Not $iStringPos = 0 Then $vFound[$vKey] = $iStringPos ; If its is found then append it
 	Next
-	Return _Map_ConvertToArray($vFound, $MAP_CONVERT1DARRAY) ; Return
+	Return _Map_ConvertToArray($vFound) ; Return
 EndFunc   ;==>_Map_Search
 
 ; #FUNCTION# ====================================================================================================================
