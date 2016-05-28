@@ -420,12 +420,12 @@ Func _Map_MapToString(ByRef $mMap, $sElementDelimiter = ';', $sPairDelimiter = '
 EndFunc   ;==>_Map_MapToString
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _Map_ReasssignKey
-; Description ...:
-; Syntax ........: _Map_ReasssignKey(Byref $mMap, $vKey, $vNewKey)
+; Name ..........: _Map_RenameKey
+; Description ...: Rename a key in a Map.
+; Syntax ........: _Map_RenameKey(Byref $mMap, $vKey, $vNewKey)
 ; Parameters ....: $mMap                - [in/out] Map to process.
-;                  $vKey                - Key to reassign.
-;                  $vNewKey             - New key to assign.
+;                  $vKey                - Key to rename.
+;                  $vNewKey             - New key's name.
 ; Return values .: Success: True
 ;                  Failure: False & @error set to non-zero
 ; Author ........: Damon Harris (TheDcoder)
@@ -435,7 +435,7 @@ EndFunc   ;==>_Map_MapToString
 ; Link ..........:
 ; Example .......: Yes
 ; ===============================================================================================================================
-Func _Map_ReassignKey(ByRef $mMap, $vKey, $vNewKey)
+Func _Map_RenameKey(ByRef $mMap, $vKey, $vNewKey)
 	If Not MapExists($mMap, $vKey) Or MapExists($mMap, $vNewKey) Then ; If the $vKey does not exists or $vNewKey does exists then...
 		Return SetError(1, 0, False) ; Return False & set @error to 1
 	EndIf
