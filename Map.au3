@@ -24,6 +24,7 @@
 ; _Map_Concatenate
 ; _Map_ConvertToArray
 ; _Map_Delete
+; _Map_DictObjectToMap
 ; _Map_Display
 ; _Map_IniToMap
 ; _Map_MapToIni
@@ -248,6 +249,30 @@ Func _Map_Delete(ByRef $mMap, $bHardWay = False)
 	If $iErrorCount > 0 Then Return SetError(1, $iErrorCount, False) ; If there was/were (a) error(s) then return...
 	Return SetExtended($iKeyCount, True) ; Return True & set @extended to $iKeyCount
 EndFunc   ;==>_Map_Delete
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Map_DictObjectToMap
+; Description ...: Convert a Scripting.Dictonary object to a Map.
+; Syntax ........: _Map_DictObjectToMap(Byref $oDictObject)
+; Parameters ....: $oDictObject         - [in/out] Scripting.Dictonary object.
+; Return values .: Success: $mConvertedMap
+;                  Failure: False & @error is set to 1
+; Author ........: Damon Harris (TheDcoder)
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: Yes
+; ===============================================================================================================================
+Func _Map_DictObjectToMap(ByRef $oDictObject)
+	If Not IsObj($oDictObject) Then Return SetError(1, 0, False) ; If $oDictObject is not an object then...
+	Local $mReturnMap[] ; Declare the $mReturnMap
+	Local $aKeys = $oDictObject.Keys() ; Get the $aKeys from the $oDictObject
+	For $vKey In $aKeys ; Loop...
+		$mReturnMap[$vKey] = $oDictObject.Item($vKey) ; Assign $oDictObject's Item to $mReturnMap's element
+	Next
+	Return $mReturnMap ; Return the $mReturnMap
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Map_Display
