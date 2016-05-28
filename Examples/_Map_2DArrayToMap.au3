@@ -1,6 +1,6 @@
 #AutoIt3Wrapper_Au3Check_Parameters=-q -d -w 1 -w 2 -w 3 -w- 4 -w 5 -w 6 -w- 7
 
-#include "../Maps.au3"
+#include "../Map.au3"
 
 Example()
 

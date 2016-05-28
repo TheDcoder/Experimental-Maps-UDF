@@ -1,4 +1,4 @@
-#include "..\Maps.au3"
+#include "..\Map.au3"
 #include <MsgBoxConstants.au3>
 
 Example()

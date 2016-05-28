@@ -1,4 +1,4 @@
-#include "..\Maps.au3"
+#include "..\Map.au3"
 
 Example()
 
