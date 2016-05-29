@@ -27,6 +27,7 @@
 ; _Map_DictObjectToMap
 ; _Map_Display
 ; _Map_IniToMap
+; _Map_MapToDictObject
 ; _Map_MapToIni
 ; _Map_MapToString
 ; _Map_ReassignKey
@@ -387,6 +388,33 @@ Func _Map_IniToMap(ByRef $mIniFile, $sFile)
 	Next
 	Return $mIniFile ; Return the $mIniFile
 EndFunc   ;==>_Map_IniToMap
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Map_MapToDictObject
+; Description ...: Convert a Map to a Scripting.Dictonary Object.
+; Syntax ........: _Map_MapToDictObject(Byref $mMap)
+; Parameters ....: $mMap                - [in/out] $mMap to convert.
+; Return values .: Success: True
+;                  Failure: False & @error set to
+;                           1 - If $mMap is not a Map
+;                           2 - If an Integer Key has been detected
+; Author ........: Damon Harris (TheDcoder)
+; Modified ......:
+; Remarks .......: DictObjects CANNOT HAVE INTEGERS AS KEYS!!!
+; Related .......:
+; Link ..........:
+; Example .......: Yes
+; ===============================================================================================================================
+Func _Map_MapToDictObject(ByRef $mMap)
+	If Not IsMap($mMap) Then Return SetError(1, 0, False) ; If $mMap is not a Map...
+	Local $oDictObject = ObjCreate("Scripting.Dictionary") ; Create the $oDictObject
+	Local $aKeys = MapKeys($mMap) ; Get the $aKeys of the $mMap
+	For $vKey In $aKeys ; Loop...
+		If IsInt($vKey) Then Return SetError(2, 0, False) ; If the $vKey is an Integer
+		$oDictObject.Add($vKey, $mMap[$vKey]) ; Copy the elements of $mMap to $oDictObject
+	Next
+	Return $oDictObject
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Map_MapToIni
