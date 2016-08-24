@@ -59,7 +59,7 @@ Global Const $MAP_CONVERT1DARRAY = 2
 ;                  $sDelimiter          - [optional] Delimiter used to split the string (Ignored if an array). Default is ';'.
 ;                  $iInitialElement     - [optional] Element to take as a starting point. Default is 0.
 ; Return values .: Success: Converted Map
-;                  Failure: False & @error set to:
+;                  Failure: Faulty Converted Map & @error set to:
 ;                           1 - If $vKeys is not an Array neither a String.
 ;                           2 - $aArray is not 1 dimensional.
 ;                           3 - If the no. of Elements in $aArray & $vKeys differ.
@@ -87,7 +87,7 @@ Func _Map_1DArrayToMap(ByRef $aArray, $vKeys, $sDelimiter = ';', $iInitialElemen
 		_Map_Append($mReturnMap, $vKeys[$iElement], $aArray[$iElement]) ; Append the element
 		$iErrorCount += @error ; Add up the error count
 	Next
-	If $iErrorCount > 0 Then Return SetError(4, $iErrorCount, False) ; If there was/were (a) error(s) then return...
+	If $iErrorCount > 0 Then Return SetError(4, $iErrorCount, $mReturnMap) ; If there was/were (a) error(s) then return...
 	Return $mReturnMap ; Return the $mReturnMap
 EndFunc   ;==>_Map_1DArrayToMap
 
@@ -100,7 +100,7 @@ EndFunc   ;==>_Map_1DArrayToMap
 ;                  $iValueColumn        - [optional] The index of column containing the values. Default is 1.
 ;                  $iInitialRow         - [optional] Row to take as a starting point. Default is 0.
 ; Return values .: Success: Converted Map.
-;                  Failure: False & @error set to:
+;                  Failure: Faulty Converted Map & @error set to:
 ;                           1 - If $aArray is not 2 dimensional.
 ;                           2 - Conflicting keys were found, @extended contains the no. of conflicts.
 ; Author ........: Damon Harris (TheDcoder)
@@ -119,7 +119,7 @@ Func _Map_2DArrayToMap(ByRef $aArray, $iKeyColumn = 0, $iValueColumn = 1, $iInit
 		_Map_Append($mReturnMap, $aArray[$iRow][$iKeyColumn], $aArray[$iRow][$iValueColumn]) ; Append the element
 		$iErrorCount += @error ; Add up the error count
 	Next
-	If $iErrorCount > 0 Then Return SetError(2, $iErrorCount, False) ; If there was/were (a) error(s) then return...
+	If $iErrorCount > 0 Then Return SetError(2, $iErrorCount, $mReturnMap) ; If there was/were (a) error(s) then return...
 	Return $mReturnMap ; Return the $mReturnMap
 EndFunc   ;==>_Map_2DArrayToMap
 
