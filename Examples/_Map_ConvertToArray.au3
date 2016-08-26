@@ -14,8 +14,8 @@ Func Example()
 	Local $aConvertedArray
 
 	$aConvertedArray = _Map_ConvertToArray($mMap, $MAP_CONVERT1DARRAY) ; Map to 1D Array
-	_ArrayDisplay($aConvertedArray)
+	_ArrayDisplay($aConvertedArray, "1D Conversion")
 
 	$aConvertedArray = _Map_ConvertToArray($mMap, $MAP_CONVERT2DARRAY) ; Map to 2D Array
-	_ArrayDisplay($aConvertedArray)
+	_ArrayDisplay($aConvertedArray, "2D Conversion")
 EndFunc

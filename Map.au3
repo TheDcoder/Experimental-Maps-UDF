@@ -181,14 +181,15 @@ EndFunc   ;==>_Map_Concatenate
 ; Syntax ........: _Map_ConvertToArray(Byref $mMap[, $iArrayDimension = $MAP_CONVERT2DARRAY])
 ; Parameters ....: $mMap                - [in/out] Map to process.
 ;                  $iArrayDimension     - [optional] The dimension of the return array. Default is $MAP_CONVERT2DARRAY.
-; Return values .: Success: A 1D Array containing all the contents of the map.
-;                           A 2D Array containing key & value pair.
+; Return values .: Success: $MAP_CONVERT1DARRAY - A 1D Array containing all the contents of the map.
+;                           $MAP_CONVERT2DARRAY - A 2D Array containing key & value pair.
+;                           IMPORTANT NOTE: @extended will always contain the no. of elements in the returned array!
 ;                  Failure: False & @error set to non-zero
 ; Author ........: Damon Harris (TheDcoder)
 ; Modified ......:
 ; Remarks .......: 1. Only $MAP_CONVERT1DARRAY & $MAP_CONVERT2DARRAY are accepted in $iArrayDimension parameter, anything else sets
 ;                     @error to 1
-;                  2. The 1st (0) element or the 2nd (1) column of 1st row contains the No. of keys/elements
+;                  2. @extended WILL ALWAYS CONTAIN THE NO. OF ELEMENTS RETURNED!
 ; Related .......:
 ; Link ..........:
 ; Example .......: Yes
@@ -198,26 +199,22 @@ Func _Map_ConvertToArray(ByRef $mMap, $iArrayDimension = $MAP_CONVERT2DARRAY)
 	Local $aKeys = MapKeys($mMap) ; Get the keys in $mMap
 	Switch $iArrayDimension ; Switch based on the user's choice
 		Case $MAP_CONVERT1DARRAY ; If the user wants a 1D Array
-			Local $aReturnArray[$iKeyCount + 1] ; Declare the $aReturnArray
-			$aReturnArray[0] = $iKeyCount ; Store the total number of elements in the 0 element
+			Local $aReturnArray[$iKeyCount] ; Declare the $aReturnArray
 			For $iElement = 0 To $iKeyCount - 1 ; Loop...
-				$aReturnArray[$iElement + 1] = $mMap[$aKeys[$iElement]] ; Populate the $aReturnArray
+				$aReturnArray[$iElement] = $mMap[$aKeys[$iElement]] ; Populate the $aReturnArray
 			Next
-			Return $aReturnArray ; Return the $aReturnArray
 
 		Case $MAP_CONVERT2DARRAY ; If the user wants a 2D Array
-			Local $aReturnArray[$iKeyCount + 1][2] ; Declare the $aReturnArray
-			$aReturnArray[0][0] = "No. of Rows" ; Store the total number of elements in the 0 element
-			$aReturnArray[0][1] = $iKeyCount ; Store the total number of elements in the 0 element
-			For $iRow = 1 To $iKeyCount ; Loop...
-				$aReturnArray[$iRow][0] = $aKeys[$iRow - 1] ; Populate the $aReturnArray
-				$aReturnArray[$iRow][1] = $mMap[$aKeys[$iRow - 1]] ; Populate the $aReturnArray
+			Local $aReturnArray[$iKeyCount][2] ; Declare the $aReturnArray
+			For $iRow = 0 To $iKeyCount - 1 ; Loop...
+				$aReturnArray[$iRow][0] = $aKeys[$iRow] ; Populate the $aReturnArray
+				$aReturnArray[$iRow][1] = $mMap[$aKeys[$iRow]] ; Populate the $aReturnArray
 			Next
-			Return $aReturnArray ; Return the $aReturnArray
 
 		Case Else ; Any other silly choices the user chooses
 			Return SetError(1, 0, False) ; Return False and set @error to 1
 	EndSwitch
+	Return SetExtended($iKeyCount, $aReturnArray) ; Return the $aReturnArray and set @extended to $iKeyCount
 EndFunc   ;==>_Map_ConvertToArray
 
 ; #FUNCTION# ====================================================================================================================
