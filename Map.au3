@@ -501,12 +501,13 @@ EndFunc   ;==>_Map_ReassignKey
 ; Parameters ....: $mMap                - [in/out] $mMap to search.
 ;                  $vSearch             - What to search for.
 ;                  $bCaseSense          - [optional] Case Sensitive?. Default is False.
-; Return values .: Success: An 2D array holding keys in which the content matched (with item count in [0])
-;                  Failure: An array with [0] = 0
+; Return values .: Success: A 2D array, See Remarks for the format of the array.
+;                  Failure: An empty 2D array and @error set to 1.
 ; Author ........: Damon Harris (TheDcoder)
 ; Modified ......:
-; Remarks .......: The format of returned Array: (n denotes a Natural Number)
-;                  The nth match is located in $aArray[n]. In the [0] columun is the name of the key and in the [1] is the Position of the text matched.
+; Remarks .......: The format of returned Array: (n denotes a Whole Number)
+;                  The nth match is located in $aArray[n]. Columnn [0] contains the key of the match and column [1] contains the
+;                  position of the first occurence of the $vSearch subject. @extended will always contain the no. of items found.
 ;
 ;                  See example for more details.
 ; Related .......:
@@ -515,14 +516,15 @@ EndFunc   ;==>_Map_ReassignKey
 ; ===============================================================================================================================
 Func _Map_Search(ByRef $mMap, $vSearch, $bCaseSense = False)
 	Local $aKeys = MapKeys($mMap) ; Get the $aKeys
-	Local $vFound[] ; Matching items will be stored in this map
+	Local $mFound[] ; Matching items will be stored in this map
 	Local $iStringPos = 0 ; Position of string
 	Local $iCaseSense = $bCaseSense ? $STR_CASESENSE : $STR_NOCASESENSEBASIC ; Convert $bCaseSense to $iCaseSense to make it usable with StringInStr
 	For $vKey In $aKeys ; Loop...
 		$iStringPos = StringInStr($mMap[$vKey], $vSearch, $iCaseSense) ; Search for $vSearch
-		If Not $iStringPos = 0 Then $vFound[$vKey] = $iStringPos ; If its is found then append it
+		If Not $iStringPos = 0 Then $mFound[$vKey] = $iStringPos ; If its is found then append it
 	Next
-	Return _Map_ConvertToArray($vFound) ; Return
+	$aReturnArray = _Map_ConvertToArray($mFound) ; Convert the $mFound entries to an array
+	Return SetError(@extended = 0 ? 1 : 0, @extended, $aReturnArray) ; Return the $aReturnArray with the number of matches found and @error value
 EndFunc   ;==>_Map_Search
 
 ; #FUNCTION# ====================================================================================================================
