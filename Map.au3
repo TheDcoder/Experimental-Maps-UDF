@@ -506,7 +506,7 @@ EndFunc   ;==>_Map_ReassignKey
 ;                  $bCaseSense          - [optional] Case Sensitive?. Default is False.
 ; Return values .: Success: An 2D array holding keys in which the content matched (with item count in [0])
 ;                  Failure: An array with [0] = 0
-; Author ........: Your Name
+; Author ........: Damon Harris (TheDcoder)
 ; Modified ......:
 ; Remarks .......: The format of returned Array: (n denotes a Natural Number)
 ;                  The nth match is located in $aArray[n]. In the [0] columun is the name of the key and in the [1] is the Position of the text matched.
