@@ -152,7 +152,7 @@ EndFunc   ;==>_Map_Append
 ; Parameters ....: $mMapOne             - [in/out] Map 1.
 ;                  $mMapTwo             - [in/out] Map 2.
 ; Return values .: Success: Combination of $mMapOne & $mMapTwo.
-;                  Failure: Concatenated map + @error set to number of key naming conflicts.
+;                  Failure: Concatenated map & @error set to number of key naming conflicts.
 ; Author ........: Damon Harris (TheDcoder)
 ; Modified ......:
 ; Remarks .......: The concatenated map is still returned even if there is an error.
