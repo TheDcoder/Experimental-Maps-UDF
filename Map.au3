@@ -524,7 +524,7 @@ Func _Map_Search(ByRef $mMap, $vSearch, $bCaseSense = False)
 		$iStringPos = StringInStr($mMap[$vKey], $vSearch, $iCaseSense) ; Search for $vSearch
 		If Not $iStringPos = 0 Then $mFound[$vKey] = $iStringPos ; If its is found then append it
 	Next
-	$aReturnArray = _Map_ConvertToArray($mFound) ; Convert the $mFound entries to an array
+	Local $aReturnArray = _Map_ConvertToArray($mFound) ; Convert the $mFound entries to an array
 	Return SetError(@extended = 0 ? 1 : 0, @extended, $aReturnArray) ; Return the $aReturnArray with the number of matches found and @error value
 EndFunc   ;==>_Map_Search
 
