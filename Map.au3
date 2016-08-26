@@ -33,6 +33,7 @@
 ; _Map_ReassignKey
 ; _Map_Search
 ; _Map_StringToMap
+; _Map_Sync
 ; _Map_Unique
 ; ===============================================================================================================================
 
@@ -558,6 +559,33 @@ Func _Map_StringToMap($sString, $sElementDelimiter = ';', $sPairDelimiter = '=')
 	Next
 	Return SetExtended($iElement, $mMap) ; Return the $mMap & set @extended to $iElement count
 EndFunc   ;==>_Map_StringToMap
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Map_Sync
+; Description ...: Syncs a $mOldMap with a $mNewMap.
+; Syntax ........: _Map_Sync($mOldMap, $mNewMap)
+; Parameters ....: $mOldMap             - Old version of the map.
+;                  $mNewMap             - New version of the map.
+; Return values .: Success: Synced map.
+; Author ........: Damon Harris (TheDcoder)
+; Modified ......:
+; Remarks .......: Here is how this function works:
+;                  1. _Map_Sync will update every element in the $mNewMap using the references from the $mOldMap
+;                  2. _Map_Sync will NOT create new elements in the $mNewMap even if an extra element existed in the $mOldMap
+;                  3. _Map_Sync will NOT touch any element in the $mNewMap with a key not present in the $mOldMap
+;
+;                  Run the example to see this function in action ;)
+; Related .......:
+; Link ..........:
+; Example .......: Yes
+; ===============================================================================================================================
+Func _Map_Sync($mOldMap, $mNewMap)
+	Local $aKeys = MapKeys($mOldMap) ; Get the $aKeys of the $mOldMap
+	For $vKey In $aKeys
+		If MapExists($mNewMap, $vKey) Then $mNewMap[$vKey] = $mOldMap[$vKey]
+	Next
+	Return $mNewMap ; Return the synced $mNewMap
+EndFunc   ;==>_Map_Sync
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Map_Unique
