@@ -33,6 +33,7 @@
 ; _Map_ReassignKey
 ; _Map_Search
 ; _Map_StringToMap
+; _Map_Sync
 ; _Map_Unique
 ; ===============================================================================================================================
 
@@ -152,7 +153,7 @@ EndFunc   ;==>_Map_Append
 ; Parameters ....: $mMapOne             - [in/out] Map 1.
 ;                  $mMapTwo             - [in/out] Map 2.
 ; Return values .: Success: Combination of $mMapOne & $mMapTwo.
-;                  Failure: Concatenated map + @error set to number of key naming conflicts.
+;                  Failure: Concatenated map & @error set to number of key naming conflicts.
 ; Author ........: Damon Harris (TheDcoder)
 ; Modified ......:
 ; Remarks .......: The concatenated map is still returned even if there is an error.
@@ -181,14 +182,15 @@ EndFunc   ;==>_Map_Concatenate
 ; Syntax ........: _Map_ConvertToArray(Byref $mMap[, $iArrayDimension = $MAP_CONVERT2DARRAY])
 ; Parameters ....: $mMap                - [in/out] Map to process.
 ;                  $iArrayDimension     - [optional] The dimension of the return array. Default is $MAP_CONVERT2DARRAY.
-; Return values .: Success: A 1D Array containing all the contents of the map.
-;                           A 2D Array containing key & value pair.
+; Return values .: Success: $MAP_CONVERT1DARRAY - A 1D Array containing all the contents of the map.
+;                           $MAP_CONVERT2DARRAY - A 2D Array containing key & value pair.
+;                           IMPORTANT NOTE: @extended will always contain the no. of elements in the returned array!
 ;                  Failure: False & @error set to non-zero
 ; Author ........: Damon Harris (TheDcoder)
 ; Modified ......:
 ; Remarks .......: 1. Only $MAP_CONVERT1DARRAY & $MAP_CONVERT2DARRAY are accepted in $iArrayDimension parameter, anything else sets
 ;                     @error to 1
-;                  2. The 1st (0) element or the 2nd (1) column of 1st row contains the No. of keys/elements
+;                  2. @extended WILL ALWAYS CONTAIN THE NO. OF ELEMENTS RETURNED!
 ; Related .......:
 ; Link ..........:
 ; Example .......: Yes
@@ -198,26 +200,22 @@ Func _Map_ConvertToArray(ByRef $mMap, $iArrayDimension = $MAP_CONVERT2DARRAY)
 	Local $aKeys = MapKeys($mMap) ; Get the keys in $mMap
 	Switch $iArrayDimension ; Switch based on the user's choice
 		Case $MAP_CONVERT1DARRAY ; If the user wants a 1D Array
-			Local $aReturnArray[$iKeyCount + 1] ; Declare the $aReturnArray
-			$aReturnArray[0] = $iKeyCount ; Store the total number of elements in the 0 element
+			Local $aReturnArray[$iKeyCount] ; Declare the $aReturnArray
 			For $iElement = 0 To $iKeyCount - 1 ; Loop...
-				$aReturnArray[$iElement + 1] = $mMap[$aKeys[$iElement]] ; Populate the $aReturnArray
+				$aReturnArray[$iElement] = $mMap[$aKeys[$iElement]] ; Populate the $aReturnArray
 			Next
-			Return $aReturnArray ; Return the $aReturnArray
 
 		Case $MAP_CONVERT2DARRAY ; If the user wants a 2D Array
-			Local $aReturnArray[$iKeyCount + 1][2] ; Declare the $aReturnArray
-			$aReturnArray[0][0] = "No. of Rows" ; Store the total number of elements in the 0 element
-			$aReturnArray[0][1] = $iKeyCount ; Store the total number of elements in the 0 element
-			For $iRow = 1 To $iKeyCount ; Loop...
-				$aReturnArray[$iRow][0] = $aKeys[$iRow - 1] ; Populate the $aReturnArray
-				$aReturnArray[$iRow][1] = $mMap[$aKeys[$iRow - 1]] ; Populate the $aReturnArray
+			Local $aReturnArray[$iKeyCount][2] ; Declare the $aReturnArray
+			For $iRow = 0 To $iKeyCount - 1 ; Loop...
+				$aReturnArray[$iRow][0] = $aKeys[$iRow] ; Populate the $aReturnArray
+				$aReturnArray[$iRow][1] = $mMap[$aKeys[$iRow]] ; Populate the $aReturnArray
 			Next
-			Return $aReturnArray ; Return the $aReturnArray
 
 		Case Else ; Any other silly choices the user chooses
 			Return SetError(1, 0, False) ; Return False and set @error to 1
 	EndSwitch
+	Return SetExtended($iKeyCount, $aReturnArray) ; Return the $aReturnArray and set @extended to $iKeyCount
 EndFunc   ;==>_Map_ConvertToArray
 
 ; #FUNCTION# ====================================================================================================================
@@ -504,12 +502,13 @@ EndFunc   ;==>_Map_ReassignKey
 ; Parameters ....: $mMap                - [in/out] $mMap to search.
 ;                  $vSearch             - What to search for.
 ;                  $bCaseSense          - [optional] Case Sensitive?. Default is False.
-; Return values .: Success: An 2D array holding keys in which the content matched (with item count in [0])
-;                  Failure: An array with [0] = 0
-; Author ........: Your Name
+; Return values .: Success: A 2D array, See Remarks for the format of the array.
+;                  Failure: An empty 2D array and @error set to 1.
+; Author ........: Damon Harris (TheDcoder)
 ; Modified ......:
-; Remarks .......: The format of returned Array: (n denotes a Natural Number)
-;                  The nth match is located in $aArray[n]. In the [0] columun is the name of the key and in the [1] is the Position of the text matched.
+; Remarks .......: The format of returned Array: (n denotes a Whole Number)
+;                  The nth match is located in $aArray[n]. Columnn [0] contains the key of the match and column [1] contains the
+;                  position of the first occurence of the $vSearch subject. @extended will always contain the no. of items found.
 ;
 ;                  See example for more details.
 ; Related .......:
@@ -518,14 +517,15 @@ EndFunc   ;==>_Map_ReassignKey
 ; ===============================================================================================================================
 Func _Map_Search(ByRef $mMap, $vSearch, $bCaseSense = False)
 	Local $aKeys = MapKeys($mMap) ; Get the $aKeys
-	Local $vFound[] ; Matching items will be stored in this map
+	Local $mFound[] ; Matching items will be stored in this map
 	Local $iStringPos = 0 ; Position of string
 	Local $iCaseSense = $bCaseSense ? $STR_CASESENSE : $STR_NOCASESENSEBASIC ; Convert $bCaseSense to $iCaseSense to make it usable with StringInStr
 	For $vKey In $aKeys ; Loop...
 		$iStringPos = StringInStr($mMap[$vKey], $vSearch, $iCaseSense) ; Search for $vSearch
-		If Not $iStringPos = 0 Then $vFound[$vKey] = $iStringPos ; If its is found then append it
+		If Not $iStringPos = 0 Then $mFound[$vKey] = $iStringPos ; If its is found then append it
 	Next
-	Return _Map_ConvertToArray($vFound) ; Return
+	Local $aReturnArray = _Map_ConvertToArray($mFound) ; Convert the $mFound entries to an array
+	Return SetError(@extended = 0 ? 1 : 0, @extended, $aReturnArray) ; Return the $aReturnArray with the number of matches found and @error value
 EndFunc   ;==>_Map_Search
 
 ; #FUNCTION# ====================================================================================================================
@@ -559,6 +559,33 @@ Func _Map_StringToMap($sString, $sElementDelimiter = ';', $sPairDelimiter = '=')
 	Next
 	Return SetExtended($iElement, $mMap) ; Return the $mMap & set @extended to $iElement count
 EndFunc   ;==>_Map_StringToMap
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Map_Sync
+; Description ...: Syncs a $mOldMap with a $mNewMap.
+; Syntax ........: _Map_Sync($mOldMap, $mNewMap)
+; Parameters ....: $mOldMap             - Old version of the map.
+;                  $mNewMap             - New version of the map.
+; Return values .: Success: Synced map.
+; Author ........: Damon Harris (TheDcoder)
+; Modified ......:
+; Remarks .......: Here is how this function works:
+;                  1. _Map_Sync will update every element in the $mNewMap using the references from the $mOldMap
+;                  2. _Map_Sync will NOT create new elements in the $mNewMap even if an extra element existed in the $mOldMap
+;                  3. _Map_Sync will NOT touch any element in the $mNewMap with a key not present in the $mOldMap
+;
+;                  Run the example to see this function in action ;)
+; Related .......:
+; Link ..........:
+; Example .......: Yes
+; ===============================================================================================================================
+Func _Map_Sync($mOldMap, $mNewMap)
+	Local $aKeys = MapKeys($mOldMap) ; Get the $aKeys of the $mOldMap
+	For $vKey In $aKeys
+		If MapExists($mNewMap, $vKey) Then $mNewMap[$vKey] = $mOldMap[$vKey]
+	Next
+	Return $mNewMap ; Return the synced $mNewMap
+EndFunc   ;==>_Map_Sync
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Map_Unique
